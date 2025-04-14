@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package gcp.cluster;
+
+import "google/api/annotations.proto";
+
+service ClusterService {
+  rpc CreateCluster(CreateClusterRequest) returns (OperationStatus) {
+    option (google.api.http) = {
+      post: "/v1/cluster"
+      body: "*"
+    };
+  }
+
+  rpc GetClusterLogs(GetLogsRequest) returns (LogList) {
+    option (google.api.http) = {
+      get: "/v1/logs"
+    };
+  }
+}
+
+message CreateClusterRequest {
+  string project_id = 1;
+  string region = 2;
+  string cluster_name = 3;
+  int32 node_count = 4;
+}
+
+message OperationStatus {
+  string operation_id = 1;
+  string status = 2;
+  string message = 3;
+}
+
+message GetLogsRequest {
+  string project_id = 1;
+  string cluster_name = 2;
+  string namespace = 3;
+  string pod_name = 4;
+}
+
+message LogList {
+  repeated string logs = 1;
+}

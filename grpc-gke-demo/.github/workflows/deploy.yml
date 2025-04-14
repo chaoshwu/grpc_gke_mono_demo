@@ -1,0 +1,40 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: ${{ secrets.GCP_PROJECT }}
+      REGION: ${{ secrets.GCP_REGION }}
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    - name: Setup Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.GCP_PROJECT }}
+        service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+
+    - name: Authenticate Docker to GCR
+      run: gcloud auth configure-docker
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT }}/grpc-api .
+        docker push gcr.io/${{ secrets.GCP_PROJECT }}/grpc-api
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Terraform Init & Apply
+      run: |
+        cd terraform
+        terraform init
+        terraform apply -auto-approve -var="project_id=${{ secrets.GCP_PROJECT }}" -var="image=gcr.io/${{ secrets.GCP_PROJECT }}/grpc-api" -var="region=${{ secrets.GCP_REGION }}"

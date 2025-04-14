@@ -1,0 +1,4 @@
+grpcio==1.64.0
+grpcio-tools==1.64.0
+google-cloud-container
+google-cloud-logging
