@@ -1,11 +1,16 @@
-FROM python:3.9-slim
+FROM python:3.9-slim-buster
 
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+RUN pip install grpcio-tools
+RUN pip install googleapis-common-protos
 
-COPY server .
-COPY proto ./proto
+COPY server /app/server
+COPY proto /app/proto
 
-CMD ["python", "server/main.py"]
+RUN python -m grpc_tools.protoc -I. --python_out=/app/server --grpc_python_out=/app/server /app/proto/cluster_service.proto
+
+ENV PYTHONPATH /app
+CMD ["python", "/app/server/main.py"]
