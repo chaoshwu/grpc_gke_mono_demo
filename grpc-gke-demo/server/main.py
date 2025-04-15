@@ -6,7 +6,9 @@ import proto.cluster_service_pb2_grpc as pb2_grpc
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     pb2_grpc.add_ClusterServiceServicer_to_server(ClusterService(), server)
-    server.add_insecure_port('[::]:9090')
+    import os
+    port = os.environ.get('PORT', '8080')
+    server.add_insecure_port(f'[::]:{port}')
     server.start()
     server.wait_for_termination()
 

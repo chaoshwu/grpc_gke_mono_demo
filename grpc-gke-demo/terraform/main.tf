@@ -13,7 +13,7 @@ resource "google_cloud_run_service" "grpc_api" {
     }
   }
 
-  traffics {
+  traffic {
     percent         = 100
     latest_revision = true
   }
