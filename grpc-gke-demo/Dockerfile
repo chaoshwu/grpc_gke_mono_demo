@@ -31,7 +31,9 @@ RUN git clone https://github.com/googleapis/googleapis
 
 RUN pip install grpcio-tools
 
-RUN python -m grpc_tools.protoc -I./proto -I./googleapis --python_out=. --grpc_python_out=. ./proto/cluster_service.proto
+ENV PROTOCOL_BUFFERS=$PWD/googleapis
+
+RUN python -m grpc_tools.protoc -I./proto --python_out=. --grpc_python_out=. ./proto/cluster_service.proto
 
 EXPOSE 8080
 CMD ["bash", "entrypoint.sh"]
