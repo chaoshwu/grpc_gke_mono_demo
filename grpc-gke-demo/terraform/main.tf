@@ -19,8 +19,11 @@ resource "google_cloud_run_service" "grpc_api" {
   }
 }
 
-resource "google_project_iam_member" "run_invoker" {
-  project = var.project_id
-  role    = "roles/run.invoker"
-  member  = "allUsers"
+# Grant public access to the Cloud Run service
+resource "google_cloud_run_service_iam_binding" "public_access" {
+  location = google_cloud_run_service.grpc_api.location
+  project  = google_cloud_run_service.grpc_api.project
+  service  = google_cloud_run_service.grpc_api.name
+  role     = "roles/run.invoker"
+  members  = ["allUsers"]
 }
