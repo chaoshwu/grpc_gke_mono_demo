@@ -28,7 +28,10 @@ RUN apt-get update && \
 # Compile protobufs
 RUN apt-get update && apt-get install -y git
 RUN git clone https://github.com/googleapis/googleapis
-RUN python -m grpc_tools.protoc -I./proto -I./googleapis --python_out=./server --grpc_python_out=./server ./proto/cluster_service.proto
+
+RUN pip install grpcio-tools
+
+RUN python -m grpc_tools.protoc -I./proto -I./googleapis --python_out=. --grpc_python_out=. ./proto/cluster_service.proto
 
 EXPOSE 8080
 CMD ["bash", "entrypoint.sh"]
